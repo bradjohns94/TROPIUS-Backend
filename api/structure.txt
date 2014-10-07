@@ -1,0 +1,30 @@
+/TROPIUS/ -- The base directory of the TROPIUS rest API
+
+/TROPIUS/devices/ -- Options that apply to all devices in the TROPIUS database
+                /list/              -- Returns information on all devices in the database
+                /add/<device dict>  -- Adds the given device to the database
+                /remove/<int: sid>  -- Removes the given device from the databse
+                /get/<device data>  -- Returns the device ids of devices matching the input
+
+/TROPIUS/hosts/ -- Options that apply to all end computers in the TROPIUS databse
+              /list/                -- List all hosts in the TROPIUS database
+              /add/<host dict>      -- Adds the given host to the database
+              /remove/<int: sid>    -- Removes the given host from the database
+              /get/<host data>      -- Returns the host ids of devices matching the input
+
+/TROPIUS/hosts/<id>/ -- Host specific commands to be operated on one specific host
+                   /power/<params>  -- Power the device on/off
+                                       Params: os, timer, on, off
+                   /reboot/<params> -- Reboot the device
+                                       Params: os, timer
+                   /music/ -- commands specific to playing music on the end device
+                         /set/          -- Specify a root directory for music to play from
+                         /play/<params> -- Play the specified song/album/artist
+                                           Params: song, album, artist
+                   /video/ -- commands specific for playing videos on the end device
+                         /set/          -- Specify a root directory for the videos to play from
+                         /play/<params/ -- Play the specific show/movie/video
+                                           Params: TODO -- FIGURE THESE OUT
+
+/TROPIUS/lights/ -- Commands specific to the operation of TROPIUS controlled lights
+#TODO work on this later
