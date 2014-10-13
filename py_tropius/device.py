@@ -54,6 +54,7 @@ def get_all(cursor):
     ids = cursor.fetchall()
     ret = {}
     for sid in ids:
+        sid = sid[0] # Formatting fix
         ret[sid] =  get(cursor, sid)
     return ret
 
