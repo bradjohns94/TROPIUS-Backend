@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python2
 
 # hosts.py
 # python adder/getter file which supplies a list of utility functions
@@ -51,7 +51,7 @@ def get_detail(cursor, sid):
 
 def get_all(cursor):
     cursor.execute("SELECT sid FROM host")
-    ids = cursor.fetchall()[0]
+    ids = cursor.fetchall()
     ret = {}
     for sid in ids:
         ret[sid] =  get_detail(cursor, sid)

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python2
 
 # device.py
 # Utility file full of functions for adding data to the device
@@ -9,7 +9,7 @@
 import psycopg2
 import socket
 import re
-
+import json
 
 def add(cursor, deviceName, ip, mac):
     """ Add a device to the device table with the passed information """

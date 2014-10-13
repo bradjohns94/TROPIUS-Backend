@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python2
 
 # The portion of the TROPIUS REST API that performs operations specific
 # to hosts
@@ -19,9 +19,9 @@ sys.path.append('/home/brad/TROPIUS/')
 from py_tropius import hosts
 from py_tropius import netutil
 
-app = Flask(__name__)
+host_api = BluePrint('host_api', __name__)
 
-@app.route('/TROPIUS/hosts/list', methods=['GET'])
+@host_api.route('/TROPIUS/hosts/list', methods=['GET'])
 def list_hosts():
     """
         Return to the requesting hosts a json string containing
@@ -32,7 +32,7 @@ def list_hosts():
     return jsonify(hosts.get_all(cursor))
 
 
-@app.route('/TROPIUS/hosts/add', methods=['POST'])
+@host_api.route('/TROPIUS/hosts/add', methods=['POST'])
 def add_host():
     """
         Return to the requesting ost a josn string containing the sid
@@ -62,7 +62,7 @@ def add_host():
     return jsonify(ret)
 
 
-@app.route('/TROPIUS/hosts/remove/<int:sid>', methods=['DELETE'])
+@host_api.route('/TROPIUS/hosts/remove/<int:sid>', methods=['DELETE'])
 def remove_host(sid):
     """ Delete the given host from the database """
     tx = psycopg2.connect("host='localhost' dbname='TROPIUS'")
@@ -75,13 +75,13 @@ def remove_host(sid):
         abort(400)
 
 
-@app.route('/TROPIUS/hosts/get/', methods=['GET'])
+@host_api.route('/TROPIUS/hosts/get/', methods=['GET'])
 def get_host():
     # TODO get the host data from the given information
     pass
 
 
-@app.route('/TROPIUS/hosts/<int:sid>/power', methods=['PATCH'])
+@host_api.route('/TROPIUS/hosts/<int:sid>/power', methods=['PATCH'])
 def set_power(sid):
     """ Toggle the power of the device using shutdown and wake on lan scripts """
     # Resolve the passed parameters if any
@@ -110,12 +110,8 @@ def set_power(sid):
         # TODO find a keyboard driver and implement OS parameter
 
 
-@app.route('/TROPIUS/hosts/<int:id>/reboot/<params>', methods=['PATCH'])
+@host_api.route('/TROPIUS/hosts/<int:id>/reboot/<params>', methods=['PATCH'])
 def reboot(params):
     # TODO make a unix shell util file
     # TODO make a windows util file
     pass
-
-
-if __name__ == '__main__':
-    app.run(debug=True, host='192.168.8.200', port=8073)

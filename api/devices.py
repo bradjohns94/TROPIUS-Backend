@@ -1,11 +1,11 @@
-#!/usr/bin/python
+#!/usr/bin/python2
 
 # The portion of the TROPIUS REST API that incorporates all API references
 # to generic device information
 
 import psycopg2
 
-from flask import Flask
+from flask import Flask, Blueprint
 from flask import jsonify
 from flask import request
 from flask import abort
@@ -16,9 +16,9 @@ sys.path.append('/home/brad/TROPIUS/')
 
 from py_tropius import device
 
-app = Flask(__name__)
+device_api = Blueprint('device_api', __name__)
 
-@app.route('/TROPIUS/devices/list', methods=['GET'])
+@device_api.route('/TROPIUS/devices/list', methods=['GET'])
 def list_devices():
     """
         Return to the requesting host a json string containing the results
@@ -29,7 +29,7 @@ def list_devices():
     return jsonify(device.get_all(cursor))
 
 
-@app.route('/TROPIUS/devices/add/', methods=['POST'])
+@device_api.route('/TROPIUS/devices/add/', methods=['POST'])
 def add_device():
     """
         Return to the requesting host a json string containing the sid
@@ -56,7 +56,7 @@ def add_device():
     return jsonify(ret)
 
 
-@app.route('/TROPIUS/devices/remove/<int:sid>', methods=['DELETE'])
+@device_api.route('/TROPIUS/devices/remove/<int:sid>', methods=['DELETE'])
 def remove_device(sid):
     """ Delete the given host from the database """
     tx = psycopg2.connect("host='localhost' dbname='TROPIUS'")
@@ -69,11 +69,7 @@ def remove_device(sid):
         abort(400)
 
 
-@app.route('/TROPIUS/devices/get/', methods=['GET'])
+@device_api.route('/TROPIUS/devices/get/', methods=['GET'])
 def get_device():
     #TODO get the device from the given keys
     pass
-
-
-if __name__ == '__main__':
-    app.run(debug=True, host='192.168.8.200', port=8073)

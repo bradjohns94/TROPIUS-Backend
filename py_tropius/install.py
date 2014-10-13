@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python2
 
 # install.py
 # creates the initial schema for the TROPIUS database and adds

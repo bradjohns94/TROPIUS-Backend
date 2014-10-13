@@ -1,4 +1,4 @@
-#!/usr/bin/env/python
+#!/usr/bin/env/python2
 # TROPIUS
 # Territorial Remote Operated PI Utility System
 # By Bradley Johns
