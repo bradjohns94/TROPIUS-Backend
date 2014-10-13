@@ -5,7 +5,7 @@
 
 import psycopg2
 
-from flask import Flask
+from flask import Flask, Blueprint
 from flask import jsonify
 from flask import request
 from flask import abort
@@ -19,7 +19,7 @@ sys.path.append('/home/brad/TROPIUS/')
 from py_tropius import hosts
 from py_tropius import netutil
 
-host_api = BluePrint('host_api', __name__)
+host_api = Blueprint('host_api', __name__)
 
 @host_api.route('/TROPIUS/hosts/list', methods=['GET'])
 def list_hosts():
