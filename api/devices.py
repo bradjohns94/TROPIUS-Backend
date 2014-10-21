@@ -26,7 +26,9 @@ def list_devices():
     """
     tx = psycopg2.connect("host='localhost' dbname='TROPIUS'")
     cursor = tx.cursor()
-    return jsonify(device.get_all(cursor))
+    ret = device.get_all(cursor)
+    ret = {'list': ret}
+    return ret
 
 
 @device_api.route('/TROPIUS/devices/add/', methods=['POST'])
@@ -52,7 +54,7 @@ def add_device():
     tx = psycopg2.connect("host='localhost' dbname='TROPIUS'")
     cursor = tx.cursor()
     ret = device.add(cursor, data['deviceName'], data['ip'], data['mac'])
-    ret = {'sid': ret}
+    ret = {'add': {'sid': ret}}
     return jsonify(ret)
 
 
@@ -64,7 +66,7 @@ def remove_device(sid):
     try:
         device.delete(cursor, sid)
         tx.commit()
-        abort(200)
+        return {'delete': {'success': True}}
     except:
         abort(400)
 

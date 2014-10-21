@@ -29,7 +29,9 @@ def list_hosts():
     """
     tx = psycopg2.connect("host='localhost' dbname='TROPIUS'")
     cursor = tx.cursor()
-    return jsonify(hosts.get_all(cursor))
+    res = hosts.get_all(cursor)
+    res = {'list': res}
+    return jsonify(res)
 
 
 @host_api.route('/TROPIUS/hosts/add', methods=['POST'])
@@ -59,6 +61,7 @@ def add_host():
     ret = hosts.add(cursor, name, ip, mac, state)
     ret = {'sid': ret}
     tx.commit()
+    ret = {'add': ret}
     return jsonify(ret)
 
 
@@ -70,7 +73,8 @@ def remove_host(sid):
     try:
         hosts.delete(cursor, sid)
         tx.commit()
-        return jsonify({'success': True})
+        ret = {'remove': {'success': True}}
+        return ret
     except:
         abort(400)
 
@@ -106,7 +110,7 @@ def set_power(sid):
         if timer is not None:
             sleep(timer)
         netutil.wake_on_lan(cursor, sid)
-        return jsonify({'success': True})
+        ret = {'power': {'success': True}}
         # TODO find a keyboard driver and implement OS parameter
 
 
