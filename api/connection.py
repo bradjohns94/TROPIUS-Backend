@@ -14,6 +14,6 @@ conn_api = Blueprint('conn_api', __name__)
 @conn_api.route('/TROPIUS/connection/test', methods=['GET'])
 def test_connection():
     """ Respond that the connection was successful """
-    res = {'ip': request.environ['REMOTE_ADDR'],
+    res = {'ip': request.remote_addr,
            'success': True}
     return jsonify(res)

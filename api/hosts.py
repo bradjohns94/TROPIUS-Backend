@@ -79,10 +79,13 @@ def remove_host(sid):
         abort(400)
 
 
-@host_api.route('/TROPIUS/hosts/get/', methods=['GET'])
-def get_host():
-    # TODO get the host data from the given information
-    pass
+@host_api.route('/TROPIUS/hosts/<int:sid>/get', methods=['GET'])
+def get_host(sid):
+    tx = psycopg2.connect("host='localhost' dbname='TROPIUS'")
+    cursor = tx.cursor()
+    ret = hosts.get_detail(cursor, sid)
+    ret = {'get': ret}
+    return jsonify(ret)
 
 
 @host_api.route('/TROPIUS/hosts/<int:sid>/power', methods=['PATCH'])

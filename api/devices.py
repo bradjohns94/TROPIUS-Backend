@@ -28,7 +28,7 @@ def list_devices():
     cursor = tx.cursor()
     ret = device.get_all(cursor)
     ret = {'list': ret}
-    return ret
+    return jsonify(ret)
 
 
 @device_api.route('/TROPIUS/devices/add/', methods=['POST'])
@@ -66,7 +66,7 @@ def remove_device(sid):
     try:
         device.delete(cursor, sid)
         tx.commit()
-        return {'delete': {'success': True}}
+        return jsonify({'delete': {'success': True}})
     except:
         abort(400)
 
