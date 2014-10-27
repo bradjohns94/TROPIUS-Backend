@@ -74,7 +74,7 @@ def remove_host(sid):
         hosts.delete(cursor, sid)
         tx.commit()
         ret = {'remove': {'success': True}}
-        return ret
+        return jsonify(ret)
     except:
         abort(400)
 
@@ -88,7 +88,7 @@ def get_host(sid):
     return jsonify(ret)
 
 
-@host_api.route('/TROPIUS/hosts/<int:sid>/power', methods=['PATCH'])
+@host_api.route('/TROPIUS/hosts/<int:sid>/power', methods=['POST'])
 def set_power(sid):
     """ Toggle the power of the device using shutdown and wake on lan scripts """
     # Resolve the passed parameters if any
@@ -113,11 +113,12 @@ def set_power(sid):
         if timer is not None:
             sleep(timer)
         netutil.wake_on_lan(cursor, sid)
-        ret = {'power': {'success': True}}
+        ret = {'power': {'state': 'on'}}
+        return jsonify(ret)
         # TODO find a keyboard driver and implement OS parameter
 
 
-@host_api.route('/TROPIUS/hosts/<int:id>/reboot/<params>', methods=['PATCH'])
+@host_api.route('/TROPIUS/hosts/<int:id>/reboot/<params>', methods=['POST'])
 def reboot(params):
     # TODO make a unix shell util file
     # TODO make a windows util file
