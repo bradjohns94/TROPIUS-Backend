@@ -11,6 +11,7 @@ Change root password:
 
 Hostname alterations:
 	echo TROPIUS > /etc/hostname
+	sudo hostnamectl set-hostname TROPIUS
 
 Add tropius user:
 	useradd -m -s /bin/bash tropius
