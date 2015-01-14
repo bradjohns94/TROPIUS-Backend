@@ -64,3 +64,13 @@ Get some required packages:
 	y to confirm
 	sudo pacman -S postgresql
 	y to confirm
+
+Set up the postgresql database:
+    sudo -i -u postgres
+    initdb --locale en_US.UTF-8 -E UTF8 -D '/var/lib/postgres/data'
+    exit
+    sudo systemctl start postgresql
+    sudo -i -u postgres
+    createuser tropius -d -r
+    exit
+    createdb TROPIUS
