@@ -1,6 +1,8 @@
+######################
 initial login:
 	username: root
 	password: root
+######################
 
 Change root password:
 	passwd
@@ -10,15 +12,54 @@ Change root password:
 Hostname alterations:
 	echo TROPIUS > /etc/hostname
 
+Add tropius user:
+	useradd -m -s /bin/bash tropius
+	passwd tropius
+	new password: tropius
+	re-type new password: tropius
+
 Add guest user:
 	useradd -m -s /bin/bash guest
-	passwd
+	passwd guest
 	new password: tropius
 	re-type new password: tropius
 
 Update pacman:
 	pacman -Syu
-	y to confirmation
+	y to confirm
+	pacman-db-upgrade
+	pacman -S base-devel
+	y to confirm
+
+Set up sudo:
+	pacman -S sudo
+	y to confirm
+	chmod +w /etc/sudoers
+	echo 'tropius ALL=(ALL) ALL' >> /etc/sudoers
+	chmod -w /etc/sudoers
+
+#####################################################################
+NOTE: From this point on we will be working under the tropius account
+	username: tropius
+	password: tropius
+#####################################################################
 
 Install yaourt:
-	
+	sudo pacman -S yajl
+	Needed packages:
+		package-query
+		yaourt
+	####################################################
+	TODO: Add these to package and automate installation
+	####################################################
+
+Get some required packages:
+	sudo pacman -S vim
+	y to confirm
+	sudo pacman -S ipython2
+	y to confirm
+	echo "alias ipython='ipython2'" >> ~/.bashrc
+	sudo pacman -S python2-flask
+	y to confirm
+	sudo pacman -S postgresql
+	y to confirm
