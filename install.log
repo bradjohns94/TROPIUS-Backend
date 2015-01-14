@@ -1,0 +1,24 @@
+initial login:
+	username: root
+	password: root
+
+Change root password:
+	passwd
+	new password: tropius
+	re-type new password: tropius
+
+Hostname alterations:
+	echo TROPIUS > /etc/hostname
+
+Add guest user:
+	useradd -m -s /bin/bash guest
+	passwd
+	new password: tropius
+	re-type new password: tropius
+
+Update pacman:
+	pacman -Syu
+	y to confirmation
+
+Install yaourt:
+	
