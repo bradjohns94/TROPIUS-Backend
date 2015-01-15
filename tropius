@@ -1,0 +1,87 @@
+set hidden
+set nocompatible
+set wildmenu
+
+" Much easier to reach.
+let mapleader=","
+
+" NERDTree stuff:
+let g:NERDTreeWinSize = 40
+
+" Detect filetypes.
+filetype on
+filetype plugin on
+"filetype indent on
+
+" Make everything pretty.
+set formatoptions+=1r
+syntax on
+set lbr
+set number
+
+" Wrapping stuff
+set nowrap
+set linebreak
+set sidescroll=5
+set listchars+=precedes:<
+set listchars+=extends:>
+
+" Make editing actually usable.
+set autoindent
+set expandtab
+set shiftwidth=4
+set softtabstop=4
+set tabstop=4
+set backspace=2
+
+" Make searching awesome.
+set incsearch
+set ignorecase
+set smartcase
+set hlsearch
+
+" This is good for Makefiles, but that's about it:
+command! RealTabs %s-^\(    \)\+-	
+
+" Tabline config (hi = hilight):
+hi TabLineFill ctermfg=7 ctermbg=7
+hi TabLine cterm=bold ctermfg=7
+hi TabLineSel cterm=bold
+set showtabline=2
+
+""""" Mappings """""
+
+" Source vimrc:
+nmap <silent> <Leader>sv :so $MYVIMRC<CR>
+
+" Toggles
+nnoremap <Leader>th :set hlsearch! hlsearch?<CR>
+nnoremap <Leader>tt :set expandtab! expandtab?<CR>
+nnoremap <Leader>tw :set wrap! wrap?<CR>
+nnoremap <Leader>tr :call NumberToggle()<CR>
+nnoremap <Leader>tp :set paste! paste?<CR>
+
+" Auto-expand braces (This still isn't perfect, because I both have to do it
+" quickly, to avoid interfering with auto-insertion, and it causes a noticable
+" pause while it waits for me to MAYBE do it. But better than it was.)
+"inoremap {<CR> {<CR>}<Esc>O<TAB>
+
+" Fix navigation over line wraps: (from http://statico.github.com/vim.html)
+nmap j gj
+nmap k gk
+
+" Always center lines when jumping to line number (thanks to https://twitter.com/mattboehm/status/316602303312429056):
+nnoremap gg ggz.
+
+highlight OverLength ctermbg=red ctermfg=white guibg=#592929
+match OverLength /\%81v.\+/
+""""" Functions """""
+
+function! NumberToggle() " http://jeffkreeftmeijer.com/2012/relative-line-numbers-in-vim-for-super-fast-movement/
+    if (&relativenumber == 1)
+        set norelativenumber
+        set number " Necessary for now to support both vim 7.3 and 7.4.
+    else
+        set relativenumber
+    endif
+endfunc
