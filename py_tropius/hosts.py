@@ -15,11 +15,10 @@ from py_tropius import device
 
 def add(cursor, hostName, ip, mac, state):
     """ Add the new host to the device and host tables """
-    state = "'" + state + "'"
     hostid = device.add(cursor, hostName, ip, mac)
     cursor.execute("""INSERT INTO host VALUES (
-                        %s, %s )
-                   """ % (hostid, state))
+                        %s, '%s', '%s' )
+                   """ % (hostid, state, hostName))
     return hostid
 
 

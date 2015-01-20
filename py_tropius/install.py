@@ -25,7 +25,7 @@ if __name__ == '__main__':
                    """)
     # Create the host table
     cursor.execute("""CREATE TABLE host (
-                        sid         INT PRIMARY KEY NOT NULL,
+                        sid         INT PRIMARY KEY NOT NULL REFERENCES device(sid),
                         state       TEXT NOT NULL,
                         nickname    TEXT UNIQUE NOT NULL)
                    """)
