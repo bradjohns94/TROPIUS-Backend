@@ -12,7 +12,7 @@ from flask import abort
 
 # Add the TROPIUS directory structure to PYTHONPATH
 import sys
-sys.path.append('/home/brad/TROPIUS/')
+sys.path.append('/home/tropius/TROPIUS/')
 
 from py_tropius import device
 

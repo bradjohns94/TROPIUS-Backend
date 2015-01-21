@@ -81,10 +81,14 @@ Start the api:
     ###########################################################
     chmod +x ~/TROPIUS/api/app.py
     #####################################################
-    Move the tropius.service file to /etc/systemd/service
-    TODO: add the tropius.service file to the git repo
-    #####################################################
+    sudo mv ~/TROPIUS/tmp/tropius.service /etc/systemd/service
     sudo systemctl enable tropius
     sudo systemctl start tropius
+
+Start other daemons:
+    chmod +x ~/TROPIUS/daemons/state.py
+    sudo mv ~/TROPIUS/tmp/tropius_state.service /etc/systemd/service
+    sudo systemctl enable tropius_state
+    sudo systemctl start tropius_state
 
 CONGRATS! We're at a working state!

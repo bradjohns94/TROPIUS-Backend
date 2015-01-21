@@ -14,7 +14,7 @@ from time import sleep
 
 # Add the TROPIUS directory strucutre to PYTHONPATH
 import sys
-sys.path.append('/home/brad/TROPIUS/')
+sys.path.append('/home/tropius/TROPIUS/')
 
 from py_tropius import hosts
 from py_tropius import netutil

@@ -1,0 +1,9 @@
+[Unit]
+Description=TROPIUS api
+
+[Service]
+User=tropius
+ExecStart=/home/tropius/TROPIUS/api/app.py
+
+[Install]
+WantedBy=multi-user.target 

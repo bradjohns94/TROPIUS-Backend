@@ -8,7 +8,7 @@ import psycopg2
 
 # Add the base TROPIUS directory to the build path
 import sys
-sys.path.append('/home/brad/TROPIUS/')
+sys.path.append('/home/tropius/TROPIUS/')
 
 from py_tropius import device
 
@@ -63,6 +63,12 @@ def delete(cursor, hostid):
     _validate_hostid(cursor, hostid)
     cursor.execute("DELETE FROM host WHERE sid = %s" % hostid)
     device.delete(cursor, hostid)
+
+
+def update_state(cursor, hostid, state):
+    """ change the hosts state to the specified state """
+    _validate_hostid(cursor, hostid)
+    cursor.execute("UPDATE host SET state = '%s' WHERE sid = %s" % (state, hostid))
 
 def _validate_hostid(cursor, hostid):
     """ Make sure there is exactly one instance of the given hostid in the database """

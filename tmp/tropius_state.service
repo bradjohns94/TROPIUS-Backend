@@ -1,0 +1,9 @@
+[Unit]
+Description=TROPIUS state daemon
+
+[Service]
+User=tropius
+ExecStart=/home/tropius/TROPIUS/daemons/state.py
+
+[Install]
+WantedBy=multi-user.target 

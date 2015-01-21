@@ -15,7 +15,7 @@ import struct
 
 # Add the base TROPIUS directory to the build path
 import sys
-sys.path.append('/home/brad/TROPIUS/')
+sys.path.append('/home/tropius/TROPIUS/')
 
 from py_tropius import device
 
