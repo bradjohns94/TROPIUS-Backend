@@ -18,6 +18,7 @@ sys.path.append('/home/tropius/TROPIUS/')
 
 from py_tropius import hosts
 from py_tropius import netutil
+from py_tropius import music
 
 host_api = Blueprint('host_api', __name__)
 
@@ -123,3 +124,35 @@ def reboot(params):
     # TODO make a unix shell util file
     # TODO make a windows util file
     pass
+
+
+@host_api.route('/TROPIUS/hosts/<int:sid>/music/play', methods=['POST'])
+def play_music(sid):
+    """ Gather music request data from the json parameters and play the song """
+    # Get the parameters for the get_song_id request
+    artist = None
+    album = None
+    title = None
+    if not request.json:
+        abort(400)
+    try:
+        title = request.json.get('title')
+        if request.json.has_key('album'):
+            album = request.json.get('album')
+        if request.json.has_key('artist'):
+            artist = request.json.get('artist')
+    except:
+        abort(400)
+    # Get the host data from the database
+    tx = psycopg2.connect("host='localhost' dbname='TROPIUS'")
+    cursor = tx.cursor()
+    host = hosts.get_detail(cursor, sid)
+    # TODO make this more customizable/secure
+    library = music.get_library(host['ip'], '8080', '', 'vlcremote')
+    # Get the song id if possible and play the song if successful
+    try:
+        song = music.get_song_id(library, title, artist, album)
+        music.play_song(host['ip'], '8080', '', 'vlcremote', song_id=song)
+        abort(200)
+    except:
+        abort(400)

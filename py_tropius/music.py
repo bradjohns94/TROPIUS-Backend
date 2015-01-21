@@ -87,6 +87,7 @@ def run_command(address, port, username, password, command):
     # Generate the base url
     url = "http://%s:%s/requests/status.xml" % (address, port)
     url = url + "?command=%s" % command
+    req = urllib2.Request(url)
     # add authentication to the request
     auth = base64.encodestring("%s:%s" % ("", "vlcremote"))
     req.add_header("Authorization", "Basic %s" % auth)
