@@ -126,6 +126,27 @@ def reboot(params):
     pass
 
 
+@host_api.route('/TROPIUS/hosts/<int:sid>/music', methods=['GET'])
+def get_library_json(sid):
+    """ Create a json dictionary of the vlc library and return it """
+    tx = psycopg2.connect("host='localhost' dbname='TROPIUS'")
+    cursor = tx.cursor()
+    host = hosts.get_detail(cursor, sid)
+    # TODO make this more customizable/secure
+    library = music.get_library(host['ip'], '8080', '', 'vlcremote')
+    # Populate a dictionary with the library data from the xml file
+    ret = {}
+    for artist in library.getchildren():
+        ret[artist.get('name')] = {}
+        for album in artist.getchildren():
+            songs = []
+            for song in album.getchildren():
+                songs.append(song.get('name'))
+            ret[artist.get('name')][album.get('name')] = songs
+    # convert dictionary to json and return
+    return jsonify(ret)
+
+
 @host_api.route('/TROPIUS/hosts/<int:sid>/music/play', methods=['POST'])
 def play_music(sid):
     """ Gather music request data from the json parameters and play the song """
@@ -153,6 +174,6 @@ def play_music(sid):
     try:
         song = music.get_song_id(library, title, artist, album)
         music.play_song(host['ip'], '8080', '', 'vlcremote', song_id=song)
-        abort(200)
+        return 200
     except:
         abort(400)
