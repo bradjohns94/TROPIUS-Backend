@@ -144,6 +144,7 @@ def get_library_json(sid):
                 songs.append(song.get('name'))
             ret[artist.get('name')][album.get('name')] = songs
     # convert dictionary to json and return
+    ret = {'library': ret}
     return jsonify(ret)
 
 
