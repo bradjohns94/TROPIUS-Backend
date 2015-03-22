@@ -52,10 +52,12 @@ def add_host():
         name = request.json.get('deviceName')
         ip = request.json.get('ip')
         mac = request.json.get('mac')
-        state = request.json.get('state')
     except:
         abort(400)
-
+    try: # Try to get the state, otherwise default it to on and let the daemon clean up
+        state = request.json.get('state')
+    except:
+        state = 'on'
     # Perform the transaction itself
     tx = psycopg2.connect("host='localhost' dbname='TROPIUS'")
     cursor = tx.cursor()
@@ -178,3 +180,15 @@ def play_music(sid):
         return 200
     except:
         abort(400)
+
+@host_api.route('/TROPIUS/hosts/<int:sid>/music/pause', methods=['POST'])
+def pause_music(sid):
+    """ pause the song that is currently playing """
+    # Get the host data from the database
+    tx = psycopg2.connect("host='localhost' dbname='TROPIUS'")
+    cursor = tx.cursor()
+    host = hosts.get_detail(cursor, sid)
+    # TODO make this more customizable/secure
+    library = music.get_library(host['ip'], '8080', '', 'vlcremote')
+    # Get the song id if possible and play the song if successful
+    music.run_command(host['ip'], '8080', '', 'vlcremote', pl_pause)
