@@ -54,10 +54,12 @@ def add_host():
         mac = request.json.get('mac')
     except:
         abort(400)
-    try: # Try to get the state, otherwise default it to on and let the daemon clean up
+    try: # Try to get the state, otherwise default it to off and let the daemon clean up
         state = request.json.get('state')
+        if state == None:
+            state = 'off'
     except:
-        state = 'on'
+        state = 'off'
     # Perform the transaction itself
     tx = psycopg2.connect("host='localhost' dbname='TROPIUS'")
     cursor = tx.cursor()
