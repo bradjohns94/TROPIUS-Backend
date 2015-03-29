@@ -160,37 +160,72 @@ def play_music(sid):
     album = None
     title = None
     if not request.json:
-        abort(400)
+        # If no JSON parameters were given, just resume playing the song
+        tx = psycopg2.connect("host='localhost' dbname='TROPIUS'")
+        cursor = tx.cursor()
+        host = hosts.get_detail(cursor, sid)
+        music.play_song(host['ip'], '8080', '', 'vlcremote')
+        return jsonify({})
     try:
-        title = request.json.get('title')
         if request.json.has_key('album'):
             album = request.json.get('album')
         if request.json.has_key('artist'):
             artist = request.json.get('artist')
-    except:
-        abort(400)
-    # Get the host data from the database
-    tx = psycopg2.connect("host='localhost' dbname='TROPIUS'")
-    cursor = tx.cursor()
-    host = hosts.get_detail(cursor, sid)
-    # TODO make this more customizable/secure
-    library = music.get_library(host['ip'], '8080', '', 'vlcremote')
-    # Get the song id if possible and play the song if successful
-    try:
+        if request.json.has_key('title'):
+            title = request.json.get('title')
+        if not artist and not album and not title: # We got no useful args
+            raise ValueError("No Valid Arguments Given")
+        # Get the host data from the database
+        tx = psycopg2.connect("host='localhost' dbname='TROPIUS'")
+        cursor = tx.cursor()
+        host = hosts.get_detail(cursor, sid)
+        # TODO make this more customizable/secure
+        library = music.get_library(host['ip'], '8080', '', 'vlcremote')
+        # Get the song id if possible and play the song if successful
         song = music.get_song_id(library, title, artist, album)
         music.play_song(host['ip'], '8080', '', 'vlcremote', song_id=song)
-        return 200
+        return jsonify({})
     except:
         abort(400)
 
 @host_api.route('/TROPIUS/hosts/<int:sid>/music/pause', methods=['POST'])
 def pause_music(sid):
     """ pause the song that is currently playing """
-    # Get the host data from the database
-    tx = psycopg2.connect("host='localhost' dbname='TROPIUS'")
-    cursor = tx.cursor()
-    host = hosts.get_detail(cursor, sid)
-    # TODO make this more customizable/secure
-    library = music.get_library(host['ip'], '8080', '', 'vlcremote')
-    # Get the song id if possible and play the song if successful
-    music.run_command(host['ip'], '8080', '', 'vlcremote', pl_pause)
+    try:
+        # Get the host data from the database
+        tx = psycopg2.connect("host='localhost' dbname='TROPIUS'")
+        cursor = tx.cursor()
+        host = hosts.get_detail(cursor, sid)
+        # Get the song id if possible and play the song if successful
+        music.run_command(host['ip'], '8080', '', 'vlcremote', 'pl_pause')
+        return jsonify({})
+    except:
+        abort(400)
+
+@host_api.route('/TROPIUS/hosts/<int:sid>/music/next', methods=['POST'])
+def next_song(sid):
+    """ Play the next song in the media library """
+    try:
+        # Get the host data from the database
+        tx = psycopg2.connect("host='localhost' dbname='TROPIUS'")
+        cursor = tx.cursor()
+        host = hosts.get_detail(cursor, sid)
+        # Get the song id if possible and play the song if successful
+        music.run_command(host['ip'], '8080', '', 'vlcremote', 'pl_next')
+        return jsonify({})
+    except:
+        abort(400)
+
+@host_api.route('/TROPIUS/hosts/<int:sid>/music/last', methods=['POST'])
+def last_song(sid):
+    """ Play the previous song in the media library """
+    try:
+        # Get the host data from the database
+        tx = psycopg2.connect("host='localhost' dbname='TROPIUS'")
+        cursor = tx.cursor()
+        host = hosts.get_detail(cursor, sid)
+        # Get the song id if possible and play the song if successful
+        music.run_command(host['ip'], '8080', '', 'vlcremote', 'pl_previous')
+        return jsonify({})
+    except:
+        abort(400)
