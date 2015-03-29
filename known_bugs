@@ -1,0 +1,10 @@
+Media Controller:
+=================
+    *   Ocassionally, if 2 requests are sent from the TROPIUS frontend, the media
+        controller will display the song selector options several times
+
+    *   Songs/albums/artists with duplicate names will override to the first instance
+        of the name in the JSON, changing the other spinners with it
+
+    *   Songs/albums/artists with apostrophes in their names will fail to play, most
+        likely due to text processing in the backend. Could lead to XSS issues.
