@@ -8,3 +8,7 @@ Media Controller:
 
     *   Songs/albums/artists with apostrophes in their names will fail to play, most
         likely due to text processing in the backend. Could lead to XSS issues.
+
+Remove Host:
+============
+    *   Removing host does not update host spinners
