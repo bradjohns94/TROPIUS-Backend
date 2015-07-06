@@ -19,10 +19,10 @@ sys.path.append('/home/tropius/TROPIUS/')
 
 from py_tropius import device
 
-def wake_on_lan(cursor, sid):
+def wake_on_lan(db, sid):
     """ Switches on remote computers using WOL. """
     # Create the hex value of the packet
-    mac = device.get_mac(cursor, sid) + ':'
+    mac = device.get_mac(db, sid) + ':'
     mac = 'ff:ff:ff:ff:ff:ff:' + (mac * 16)
     mac = mac[:-1] # Remove trailing ':'
 

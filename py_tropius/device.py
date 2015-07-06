@@ -6,12 +6,12 @@
 # endpoint for commands to or from the TROPIUS device, including
 # the TROPIUS system itself.
 
-import psycopg2
+import sqlite3
 import socket
 import re
 import json
 
-def add(cursor, deviceName, ip, mac):
+def add(db, deviceName, ip, mac):
     """ Add a device to the device table with the passed information """
     deviceName = "'" + deviceName + "'"
     # Validate the passed ip address
@@ -26,67 +26,62 @@ def add(cursor, deviceName, ip, mac):
     if match is None:
         raise ValueError('Invalid Hardware Address: %s' % mac)
     mac = "'" + mac + "'"
-    # Get a new sid from the sid sequence
-    cursor.execute("SELECT nextval('sid')")
-    deviceid = cursor.fetchone()
-    deviceid = int(deviceid[0])
     # Add the device to the database
-    cursor.execute("""INSERT INTO device VALUES (
-                        %s, %s, %s, %s )
-                   """ % (deviceid, deviceName, ip, mac))
-    return deviceid
+    db.execute("""INSERT INTO device VALUES (
+                        NULL, %s, %s, %s )
+                   """ % (deviceName, ip, mac))
 
 
-def get(cursor, deviceid):
+def get(db, deviceid):
     """ Get the device data of the device with the given deviceid """
-    _validate_deviceid(cursor, deviceid)
-    cursor.execute("SELECT * FROM device WHERE sid = %s" % deviceid)
-    res = cursor.fetchone()
+    _validate_deviceid(db, deviceid)
+    db.execute("SELECT * FROM device WHERE sid = %s" % deviceid)
+    res = db.fetchone()
     return {'sid': res[0],
             'devicename': res[1],
             'ip': res[2],
             'mac': res[3]}
 
 
-def get_all(cursor):
+def get_all(db):
     """ Get the device data of all devices in the device table """
-    cursor.execute("SELECT sid FROM device")
-    ids = cursor.fetchall()
+    db.execute("SELECT sid FROM device")
+    ids = db.fetchall()
     ret = {}
     for sid in ids:
         sid = sid[0] # Formatting fix
-        ret[sid] =  get(cursor, sid)
+        ret[sid] =  get(db, sid)
     return ret
 
 
-def delete(cursor, deviceid):
+def delete(db, deviceid):
     """ Remove the device with the given deviceid from the database """
     # Do not let user remove TROPIUS device from the database
     if deviceid == 101:
         raise ValueError('Cannot Remove TROPIUS Device')
-    _validate_deviceid(cursor, deviceid)
+    _validate_deviceid(db, deviceid)
     # TODO delete sid from all other tables when device is deleted
-    cursor.execute("DELETE FROM device WHERE sid = %s" % deviceid)
+    db.execute("DELETE FROM device WHERE sid = %s" % deviceid)
 
 
-def get_name(cursor, deviceid):
+def get_name(db, deviceid):
     """ Get the name of the device with the given sid """
-    return get(cursor, deviceid)['devicename']
+    return get(db, deviceid)['devicename']
 
 
-def get_ip(cursor, deviceid):
+def get_ip(db, deviceid):
     """ Get the ip address of the device with the given sid """
-    return get(cursor, deviceid)['ip']
+    return get(db, deviceid)['ip']
 
 
-def get_mac(cursor, deviceid):
+def get_mac(db, deviceid):
     """ Get the mac address of the device with the given sid """
-    return get(cursor, deviceid)['mac']
+    return get(db, deviceid)['mac']
 
 
-def _validate_deviceid(cursor, deviceid):
+def _validate_deviceid(db, deviceid):
     """ Make sure there is exactly one instance of the given deviceid in the database """
-    cursor.execute("SELECT COUNT(*) FROM device WHERE sid = %s" % deviceid)
-    if len(cursor.fetchall()) == 1:
+    db.execute("SELECT COUNT(*) FROM device WHERE sid = %s" % deviceid)
+    if len(db.fetchall()) == 1:
         return
     raise ValueError('Invalid DeviceID: %s' % deviceid)

@@ -1,12 +1,12 @@
 #!/bin/bash
 # TROPIUS install, to be run on 192.168.8.200 after startup
-$root       = "root"
-$user       = "tropius"
-$guest      = "guest"
-$password   = "tropius"
+root="root"
+user="tropius"
+guest="guest"
+password="tropius"
 
 # Set the root password
-echo "$password" | passwd "$root" --stdin
+echo "$password" | passwd "$root" --stdin > /dev/null 2>&1
 
 # Set the hostname
 echo "TROPIUS" > "/etc/hostname"

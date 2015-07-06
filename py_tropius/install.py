@@ -6,31 +6,28 @@
 
 from uuid import getnode as get_mac
 import socket
-import psycopg2
+import sqlite3
 import re
 
 import device
 
 if __name__ == '__main__':
     # Create the initial transaction
-    tx = psycopg2.connect("host='localhost' dbname='TROPIUS'")
-    cursor = tx.cursor()
+    db = sqlite3.connect('TROPIUS.db')
     
     # Create the device table
-    cursor.execute("""CREATE TABLE device (
-                        sid         INT PRIMARY KEY NOT NULL,
+    db.execute("""CREATE TABLE device (
+                        sid         INTEGER PRIMARY KEY AUTOINCREMENT,
                         deviceName  TEXT,
                         ip          INET NOT NULL,
                         mac         MACADDR NOT NULL )
                    """)
     # Create the host table
-    cursor.execute("""CREATE TABLE host (
-                        sid         INT PRIMARY KEY NOT NULL REFERENCES device(sid),
+    db.execute("""CREATE TABLE host (
+                        sid         INTEGER PRIMARY KEY NOT NULL REFERENCES device(sid),
                         state       TEXT NOT NULL,
                         nickname    TEXT UNIQUE NOT NULL)
                    """)
-    # Create the system id sequence
-    cursor.execute("CREATE SEQUENCE sid START 101")
 
     # Get the localhosts MAC Address
     mac = re.sub(r'(?<=..)(..)', r':\1', hex(get_mac()).strip('0x'))
@@ -41,7 +38,7 @@ if __name__ == '__main__':
     ip = socket.gethostbyname(hostname)
 
     # Add the TROPIUS system to the database
-    device.add(cursor, hostname, ip, mac)
+    device.add(db, hostname, ip, mac)
 
     # Commit the changes made to the database
-    tx.commit()
+    db.commit()
