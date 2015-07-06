@@ -30,6 +30,24 @@ def get_library(address, port, username, password):
     return library
 
 
+def get_status(address, port, username, password):
+    """ Given basic http auth info, get the status of vlc player """
+    # Create the base url request
+    req = urllib2.Request("http://%s:%s/requests/status.xml" % (address, port))
+    # Add username/password authentication
+    auth = base64.encodestring("%s:%s" % ("", "vlcremote"))
+    req.add_header("Authorization", "Basic %s" % auth)
+    # Send the request convert the response into a string
+    res = urllib2.urlopen(req)
+    data = res.readlines()
+    xml_string = ""
+    for line in data:
+        xml_string = xml_string + line
+    # Get an XML reference to the Media Library and return
+    root = ET.fromstring(xml_string)
+    return root
+
+
 def get_song_id(library, title, artist=None, album=None):
     """ Given a library result from get_library find a specific song id """
     # Build the XML query path based on the passed parameters
