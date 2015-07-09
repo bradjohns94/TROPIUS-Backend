@@ -13,7 +13,7 @@ import device
 
 if __name__ == '__main__':
     # Create the initial transaction
-    db = sqlite3.connect('TROPIUS.db')
+    db = sqlite3.connect('/home/tropius/TROPIUS/TROPIUS.db')
     
     # Create the device table
     db.execute("""CREATE TABLE device (

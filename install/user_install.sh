@@ -25,13 +25,15 @@ echo "$password" | sudo -S pacman -U yaourt-1.6-1-any.pkg.tar.xz --noconfirm
 cd "/home/tropius/"
 
 # Install the TROPIUS database
+cd "/home/tropius/TROPIUS"
 python "/home/tropius/TROPIUS/py_tropius/install.py"
+cd "/home/tropius/"
 
 # Install TROPIUS daemons
 chmod +x "/home/tropius/TROPIUS/api/app.py"
-echo "$password" | sudo mv "/home/tropius/TROPIUS/tmp/tropius.service" "/etc/systemd/service"
+echo "$password" | sudo mv "/home/tropius/TROPIUS/tmp/tropius.service" "/etc/systemd/system"
 chmod +x "/home/tropius/TROPIUS/daemons/state.py"
-echo "$password" | sudo mv "/home/tropius/TROPIUS/tmp/tropius_state.service" "/etc/systemd/service"
+echo "$password" | sudo mv "/home/tropius/TROPIUS/tmp/tropius_state.service" "/etc/systemd/system"
 echo "$password" | sudo systemctl enable tropius
 echo "$password" | sudo systemctl enable tropius_state
 echo "$password" | sudo systemctl start tropius

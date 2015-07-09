@@ -2,8 +2,7 @@
 
 # The portion of the TROPIUS REST API that incorporates all API references
 # to generic device information
-
-import psycopg2
+import sqlite3
 
 from flask import Flask, Blueprint
 from flask import jsonify
@@ -24,9 +23,8 @@ def list_devices():
         Return to the requesting host a json string containing the results
         of a SELECT * command on the device table
     """
-    tx = psycopg2.connect("host='localhost' dbname='TROPIUS'")
-    cursor = tx.cursor()
-    ret = device.get_all(cursor)
+    db = sqlite3.connect('/home/tropius/TROPIUS/TROPIUS.db')
+    ret = device.get_all(db)
     ret = {'list': ret}
     return jsonify(ret)
 
@@ -51,9 +49,8 @@ def add_device():
         abort(400)
 
     # Perform the transaction itself
-    tx = psycopg2.connect("host='localhost' dbname='TROPIUS'")
-    cursor = tx.cursor()
-    ret = device.add(cursor, data['deviceName'], data['ip'], data['mac'])
+    db = sqlite3.connect('/home/tropius/TROPIUS/TROPIUS.db')
+    ret = device.add(db, data['deviceName'], data['ip'], data['mac'])
     ret = {'add': {'sid': ret}}
     return jsonify(ret)
 
@@ -61,11 +58,10 @@ def add_device():
 @device_api.route('/TROPIUS/devices/remove/<int:sid>', methods=['DELETE'])
 def remove_device(sid):
     """ Delete the given host from the database """
-    tx = psycopg2.connect("host='localhost' dbname='TROPIUS'")
-    cursor = tx.cursor()
+    db = sqlite3.connect('/home/tropius/TROPIUS/TROPIUS.db')
     try:
-        device.delete(cursor, sid)
-        tx.commit()
+        device.delete(db, sid)
+        db.commit()
         return jsonify({'delete': {'success': True}})
     except:
         abort(400)

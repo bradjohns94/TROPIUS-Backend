@@ -2,8 +2,7 @@
 
 # The portion of the TROPIUS REST API that performs operations specific
 # to hosts
-
-import psycopg2
+import sqlite3
 
 from flask import Flask, Blueprint
 from flask import jsonify
@@ -28,9 +27,8 @@ def list_hosts():
         Return to the requesting hosts a json string containing
         the results of a SELECT * command on the hosts table
     """
-    tx = psycopg2.connect("host='localhost' dbname='TROPIUS'")
-    cursor = tx.cursor()
-    res = hosts.get_all(cursor)
+    db = sqlite3.connect('/home/tropius/TROPIUS/TROPIUS.db')
+    res = hosts.get_all(db)
     res = {'list': res}
     return jsonify(res)
 
@@ -61,11 +59,10 @@ def add_host():
     except:
         state = 'off'
     # Perform the transaction itself
-    tx = psycopg2.connect("host='localhost' dbname='TROPIUS'")
-    cursor = tx.cursor()
-    ret = hosts.add(cursor, name, ip, mac, state)
+    db = sqlite3.connect('/home/tropius/TROPIUS/TROPIUS.db')
+    ret = hosts.add(db, name, ip, mac, state)
     ret = {'sid': ret}
-    tx.commit()
+    db.commit()
     ret = {'add': ret}
     return jsonify(ret)
 
@@ -73,11 +70,10 @@ def add_host():
 @host_api.route('/TROPIUS/hosts/remove/<int:sid>', methods=['DELETE'])
 def remove_host(sid):
     """ Delete the given host from the database """
-    tx = psycopg2.connect("host='localhost' dbname='TROPIUS'")
-    cursor = tx.cursor()
+    db = sqlite3.connect('/home/tropius/TROPIUS/TROPIUS.db')
     try:
-        hosts.delete(cursor, sid)
-        tx.commit()
+        hosts.delete(db, sid)
+        db.commit()
         ret = {'remove': {'success': True}}
         return jsonify(ret)
     except:
@@ -86,9 +82,8 @@ def remove_host(sid):
 
 @host_api.route('/TROPIUS/hosts/<int:sid>/get', methods=['GET'])
 def get_host(sid):
-    tx = psycopg2.connect("host='localhost' dbname='TROPIUS'")
-    cursor = tx.cursor()
-    ret = hosts.get_detail(cursor, sid)
+    db = sqlite3.connect('/home/tropius/TROPIUS/TROPIUS.db')
+    ret = hosts.get_detail(db, sid)
     ret = {'get': ret}
     return jsonify(ret)
 
@@ -104,9 +99,8 @@ def set_power(sid):
             timer = request.json.get('timer')
         if os in request.json:
             os = request.json.get('os')
-    tx = psycopg2.connect("host='localhost' dbname='TROPIUS'")
-    cursor = tx.cursor()
-    state = hosts.get(cursor, sid)['state']
+    db = sqlite3.connect('/home/tropius/TROPIUS/TROPIUS.db')
+    state = hosts.get(db, sid)['state']
     
     if state == 'on':
         # The host is on -- turn it off
@@ -117,7 +111,7 @@ def set_power(sid):
         # The host is off -- turn it on
         if timer is not None:
             sleep(timer)
-        netutil.wake_on_lan(cursor, sid)
+        netutil.wake_on_lan(db, sid)
         ret = {'power': {'state': 'on'}}
         return jsonify(ret)
         # TODO find a keyboard driver and implement OS parameter
@@ -133,9 +127,8 @@ def reboot(params):
 @host_api.route('/TROPIUS/hosts/<int:sid>/music', methods=['GET'])
 def get_library_json(sid):
     """ Create a json dictionary of the vlc library and return it """
-    tx = psycopg2.connect("host='localhost' dbname='TROPIUS'")
-    cursor = tx.cursor()
-    host = hosts.get_detail(cursor, sid)
+    db = sqlite3.connect('/home/tropius/TROPIUS/TROPIUS.db')
+    host = hosts.get_detail(db, sid)
     # TODO make this more customizable/secure
     library = music.get_library(host['ip'], '8080', '', 'vlcremote')
     # Populate a dictionary with the library data from the xml file
@@ -161,9 +154,8 @@ def play_music(sid):
     title = None
     if not request.json:
         # If no JSON parameters were given, just resume playing the song
-        tx = psycopg2.connect("host='localhost' dbname='TROPIUS'")
-        cursor = tx.cursor()
-        host = hosts.get_detail(cursor, sid)
+        db = sqlite3.connect('/home/tropius/TROPIUS/TROPIUS.db')
+        host = hosts.get_detail(db, sid)
         music.play_song(host['ip'], '8080', '', 'vlcremote')
         return jsonify({})
     try:
@@ -176,9 +168,8 @@ def play_music(sid):
         if not artist and not album and not title: # We got no useful args
             raise ValueError("No Valid Arguments Given")
         # Get the host data from the database
-        tx = psycopg2.connect("host='localhost' dbname='TROPIUS'")
-        cursor = tx.cursor()
-        host = hosts.get_detail(cursor, sid)
+        db = sqlite3.connect('/home/tropius/TROPIUS/TROPIUS.db')
+        host = hosts.get_detail(db, sid)
         # TODO make this more customizable/secure
         library = music.get_library(host['ip'], '8080', '', 'vlcremote')
         # Get the song id if possible and play the song if successful
@@ -193,9 +184,8 @@ def pause_music(sid):
     """ pause the song that is currently playing """
     try:
         # Get the host data from the database
-        tx = psycopg2.connect("host='localhost' dbname='TROPIUS'")
-        cursor = tx.cursor()
-        host = hosts.get_detail(cursor, sid)
+        db = sqlite3.connect('/home/tropius/TROPIUS/TROPIUS.db')
+        host = hosts.get_detail(db, sid)
         # Get the song id if possible and play the song if successful
         music.run_command(host['ip'], '8080', '', 'vlcremote', 'pl_pause')
         return jsonify({})
@@ -207,9 +197,8 @@ def next_song(sid):
     """ Play the next song in the media library """
     try:
         # Get the host data from the database
-        tx = psycopg2.connect("host='localhost' dbname='TROPIUS'")
-        cursor = tx.cursor()
-        host = hosts.get_detail(cursor, sid)
+        db = sqlite3.connect('/home/tropius/TROPIUS/TROPIUS.db')
+        host = hosts.get_detail(db, sid)
         # Get the song id if possible and play the song if successful
         music.run_command(host['ip'], '8080', '', 'vlcremote', 'pl_next')
         return jsonify({})
@@ -221,9 +210,8 @@ def last_song(sid):
     """ Play the previous song in the media library """
     try:
         # Get the host data from the database
-        tx = psycopg2.connect("host='localhost' dbname='TROPIUS'")
-        cursor = tx.cursor()
-        host = hosts.get_detail(cursor, sid)
+        db = sqlite3.connect('/home/tropius/TROPIUS/TROPIUS.db')
+        host = hosts.get_detail(db, sid)
         # Get the song id if possible and play the song if successful
         music.run_command(host['ip'], '8080', '', 'vlcremote', 'pl_previous')
         return jsonify({})

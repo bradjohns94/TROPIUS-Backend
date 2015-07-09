@@ -35,8 +35,8 @@ def add(db, deviceName, ip, mac):
 def get(db, deviceid):
     """ Get the device data of the device with the given deviceid """
     _validate_deviceid(db, deviceid)
-    db.execute("SELECT * FROM device WHERE sid = %s" % deviceid)
-    res = db.fetchone()
+    res = db.execute("SELECT * FROM device WHERE sid = %s" % deviceid)
+    res = res.fetchone()
     return {'sid': res[0],
             'devicename': res[1],
             'ip': res[2],
@@ -45,8 +45,8 @@ def get(db, deviceid):
 
 def get_all(db):
     """ Get the device data of all devices in the device table """
-    db.execute("SELECT sid FROM device")
-    ids = db.fetchall()
+    res = db.execute("SELECT sid FROM device")
+    ids = res.fetchall()
     ret = {}
     for sid in ids:
         sid = sid[0] # Formatting fix
@@ -81,7 +81,7 @@ def get_mac(db, deviceid):
 
 def _validate_deviceid(db, deviceid):
     """ Make sure there is exactly one instance of the given deviceid in the database """
-    db.execute("SELECT COUNT(*) FROM device WHERE sid = %s" % deviceid)
-    if len(db.fetchall()) == 1:
+    res = db.execute("SELECT COUNT(*) FROM device WHERE sid = %s" % deviceid)
+    if len(res.fetchall()) == 1:
         return
     raise ValueError('Invalid DeviceID: %s' % deviceid)

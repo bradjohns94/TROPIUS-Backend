@@ -25,8 +25,8 @@ def add(db, hostName, ip, mac, state):
 def get(d, hostid):
     """ Get the host data of the host with the given hostid """
     _validate_hostid(db, hostid)
-    db.execute("SELECT * FROM host WHERE sid = %s" % hostid)
-    res = db.fetchone()
+    res = db.execute("SELECT * FROM host WHERE sid = %s" % hostid)
+    res = res.fetchall()
     return {'sid': res[0],
             'state': res[1]
            }
@@ -38,8 +38,8 @@ def get_detail(db, sid):
         the specified sid
     """
     _validate_hostid(db, sid)
-    db.execute("SELECT * FROM device NATURAL JOIN host WHERE sid = %s" % sid)
-    res = db.fetchone()
+    res = db.execute("SELECT * FROM device NATURAL JOIN host WHERE sid = %s" % sid)
+    res = res.fetchone()
     return {'sid': res[0],
             'devicename': res[1],
             'ip': res[2],
@@ -49,8 +49,8 @@ def get_detail(db, sid):
 
 
 def get_all(db):
-    db.execute("SELECT sid FROM host")
-    ids = db.fetchall()
+    res = db.execute("SELECT sid FROM host")
+    ids = res.fetchall()
     ret = {}
     for sid in ids:
         sid = sid[0] # Formatting fix
@@ -72,7 +72,7 @@ def update_state(db, hostid, state):
 
 def _validate_hostid(db, hostid):
     """ Make sure there is exactly one instance of the given hostid in the database """
-    db.execute("SELECT COUNT(*) FROM host WHERE sid = %s" % hostid)
-    if len(db.fetchall()) == 1:
+    res = db.execute("SELECT COUNT(*) FROM host WHERE sid = %s" % hostid)
+    if len(res.fetchall()) == 1:
         return
     raise ValueError('Invalid HostID: %s' % hostid)
