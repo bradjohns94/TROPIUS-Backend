@@ -130,7 +130,7 @@ def get_library_json(sid):
     db = sqlite3.connect('/home/tropius/TROPIUS/TROPIUS.db')
     host = hosts.get_detail(db, sid)
     # TODO make this more customizable/secure
-    library = music.get_library(host['ip'], '8080', '', 'vlcremote')
+    library = music.get_library(host['ip'], 8080, '', 'vlcremote')
     # Populate a dictionary with the library data from the xml file
     ret = {}
     for artist in library.getchildren():
