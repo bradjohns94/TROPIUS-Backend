@@ -140,6 +140,19 @@ echo "Moving ssh key to home directory..."
 mkdir "root/home/.ssh" > /dev/null 2>&1
 cp "~/.ssh/id_rsa.pub" "root/home/.ssh/authorized_keys"
 
+# Move boot files to the boot partition
+echo "Finishing disk configuration..."
+mv "root/boot/*" "boot"
+if [ "$?" -ne 0 ]; then
+    echo "Failed to move boot files, installation failed."
+    exit
+fi
+umount boot root
+if [ "$?" -ne 0 ]; then
+    echo "Failed to unmount disk, installation failed"
+    exit
+fi
+
 echo "Eject the SD card and load it into the Raspberry Pi, then press ENTER"
 read confirm
 
