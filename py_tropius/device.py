@@ -26,21 +26,27 @@ def add(db, deviceName, ip, mac):
     if match is None:
         raise ValueError('Invalid Hardware Address: %s' % mac)
     mac = "'" + mac + "'"
+    # Figure out what the hostid will be
+    res = db.execute("SELECT seq FROM SQLITE_SEQUENCE WHERE name = 'device'")
+    hostid = res.fetchone()[0]
+    if not hostid:
+        hostid = 0
     # Add the device to the database
     db.execute("""INSERT INTO device VALUES (
-                        NULL, %s, %s, %s )
-                   """ % (deviceName, ip, mac))
+                        NULL, ?, ?, ? )
+                   """, (deviceName, ip, mac))
+    return hostid + 1
 
 
 def get(db, deviceid):
     """ Get the device data of the device with the given deviceid """
     _validate_deviceid(db, deviceid)
-    res = db.execute("SELECT * FROM device WHERE sid = %s" % deviceid)
+    res = db.execute("SELECT * FROM device WHERE sid = %d" % deviceid)
     res = res.fetchone()
     return {'sid': res[0],
-            'devicename': res[1],
-            'ip': res[2],
-            'mac': res[3]}
+            'devicename': res[1].replace("'", ""),
+            'ip': res[2].replace("'", ""),
+            'mac': res[3].replace("'", "")}
 
 
 def get_all(db):
@@ -61,7 +67,7 @@ def delete(db, deviceid):
         raise ValueError('Cannot Remove TROPIUS Device')
     _validate_deviceid(db, deviceid)
     # TODO delete sid from all other tables when device is deleted
-    db.execute("DELETE FROM device WHERE sid = %s" % deviceid)
+    db.execute("DELETE FROM device WHERE sid = %d" % (deviceid))
 
 
 def get_name(db, deviceid):
@@ -81,7 +87,7 @@ def get_mac(db, deviceid):
 
 def _validate_deviceid(db, deviceid):
     """ Make sure there is exactly one instance of the given deviceid in the database """
-    res = db.execute("SELECT COUNT(*) FROM device WHERE sid = %s" % deviceid)
+    res = db.execute("SELECT COUNT(*) FROM device WHERE sid = %d" % deviceid)
     if len(res.fetchall()) == 1:
         return
     raise ValueError('Invalid DeviceID: %s' % deviceid)

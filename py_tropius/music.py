@@ -14,9 +14,9 @@ import xml.etree.ElementTree as ET
 def get_library(address, port, username, password):
     """ Given basic http auth info, get the music library for the given host """
     # Create the base url request
-    req = urllib2.Request("http://%s:%s/requests/playlist.xml" % (address, port))
+    req = urllib2.Request("http://%s:%d/requests/playlist.xml" % (address, port))
     # Add username/password authentication
-    auth = base64.encodestring("%s:%s" % ("", "vlcremote"))
+    auth = base64.encodestring("%s:%s" % (username, password)).replace('\n', '')
     req.add_header("Authorization", "Basic %s" % auth)
     # Send the request convert the response into a string
     res = urllib2.urlopen(req)

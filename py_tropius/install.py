@@ -32,7 +32,7 @@ if __name__ == '__main__':
     # Get the localhosts MAC Address
     mac = re.sub(r'(?<=..)(..)', r':\1', hex(get_mac()).strip('0x'))
     mac = mac.strip('L')
-    mac = mac.capitalize()
+    mac = mac.upper()
     # Get the localhosts IP Address and hostname
     hostname = socket.gethostname()
     ip = socket.gethostbyname(hostname)
