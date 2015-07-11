@@ -156,7 +156,7 @@ def play_music(sid):
         # If no JSON parameters were given, just resume playing the song
         db = sqlite3.connect('/home/tropius/TROPIUS/TROPIUS.db')
         host = hosts.get_detail(db, sid)
-        music.play_song(host['ip'], '8080', '', 'vlcremote')
+        music.play_song(host['ip'], 8080, '', 'vlcremote')
         return jsonify({})
     try:
         if request.json.has_key('album'):
@@ -171,10 +171,10 @@ def play_music(sid):
         db = sqlite3.connect('/home/tropius/TROPIUS/TROPIUS.db')
         host = hosts.get_detail(db, sid)
         # TODO make this more customizable/secure
-        library = music.get_library(host['ip'], '8080', '', 'vlcremote')
+        library = music.get_library(host['ip'], 8080, '', 'vlcremote')
         # Get the song id if possible and play the song if successful
         song = music.get_song_id(library, title, artist, album)
-        music.play_song(host['ip'], '8080', '', 'vlcremote', song_id=song)
+        music.play_song(host['ip'], 8080, '', 'vlcremote', song_id=song)
         return jsonify({})
     except:
         abort(400)
@@ -187,7 +187,7 @@ def pause_music(sid):
         db = sqlite3.connect('/home/tropius/TROPIUS/TROPIUS.db')
         host = hosts.get_detail(db, sid)
         # Get the song id if possible and play the song if successful
-        music.run_command(host['ip'], '8080', '', 'vlcremote', 'pl_pause')
+        music.run_command(host['ip'], 8080, '', 'vlcremote', 'pl_pause')
         return jsonify({})
     except:
         abort(400)
@@ -200,7 +200,7 @@ def next_song(sid):
         db = sqlite3.connect('/home/tropius/TROPIUS/TROPIUS.db')
         host = hosts.get_detail(db, sid)
         # Get the song id if possible and play the song if successful
-        music.run_command(host['ip'], '8080', '', 'vlcremote', 'pl_next')
+        music.run_command(host['ip'], 8080, '', 'vlcremote', 'pl_next')
         return jsonify({})
     except:
         abort(400)
@@ -213,7 +213,7 @@ def last_song(sid):
         db = sqlite3.connect('/home/tropius/TROPIUS/TROPIUS.db')
         host = hosts.get_detail(db, sid)
         # Get the song id if possible and play the song if successful
-        music.run_command(host['ip'], '8080', '', 'vlcremote', 'pl_previous')
+        music.run_command(host['ip'], 8080, '', 'vlcremote', 'pl_previous')
         return jsonify({})
     except:
         abort(400)
