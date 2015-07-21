@@ -4,4 +4,4 @@
     #hosts.py
     #device.py
 
-__all__ = ["commands", "hosts", "device", "netutil", "music"]
+__all__ = ["commands", "hosts", "device", "netutil", "music", "spotify"]

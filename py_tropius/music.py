@@ -7,6 +7,10 @@
 # sub-directories. Each artist sub-directories should be sub-divided into
 # album directories which contains the songs themselves.
 
+# NOTE: This library is actually depreciated. The current TROPIUS system should
+# now rely on the spotify api, but this is available if you REALLY want to fight
+# with VLC
+
 import base64
 import urllib2
 import xml.etree.ElementTree as ET
