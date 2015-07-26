@@ -61,14 +61,14 @@ def get_all(db):
 def delete(db, hostid):
     """ Delete the host with the given hostid from the database """
     _validate_hostid(db, hostid)
-    db.execute("DELETE FROM host WHERE sid = %d" % (hostid))
+    db.execute("DELETE FROM host WHERE sid = %d" % (hostid,))
     device.delete(db, hostid)
 
 
 def update_state(db, hostid, state):
     """ change the hosts state to the specified state """
     _validate_hostid(db, hostid)
-    db.execute("UPDATE host SET state = ? WHERE sid = %d" % hostid, (state))
+    db.execute("UPDATE host SET state = ? WHERE sid = %d" % hostid, (state,))
 
 def _validate_hostid(db, hostid):
     """ Make sure there is exactly one instance of the given hostid in the database """
