@@ -141,14 +141,22 @@ def play_music(sid):
         # Get the host data from the database
         db = sqlite3.connect('/home/tropius/TROPIUS/TROPIUS.db')
         host = hosts.get_detail(db, sid)
+        artist = None
+        album = None
+        track = None
         if request.json.has_key('song'):
-            spotify.play(host['ip'], request.json.get('song'), 'song')
+            song = request.json.get('song')
+            #spotify.play(host['ip'], request.json.get('song'), 'song')
         elif request.json.has_key('album'):
-            spotify.play(host['ip'], request.json.get('album'), 'album')
+            album = request.json.get('album')
+            #spotify.play(host['ip'], request.json.get('album'), 'album')
         elif request.json.has_key('artist'):
-            spotify.play(host['ip'], request.json.get('artist'), 'artist')
+            artist = request.json.get('artist')
+            #spotify.play(host['ip'], request.json.get('artist'), 'artist')
         else:
             spotify.resume(host['ip'])
+            return jsonify({})
+        spotify.compound_play(host['ip'], artist=artist, album=album, song=song)
         return jsonify({})
     except:
         abort(400)
