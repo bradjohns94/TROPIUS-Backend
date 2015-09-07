@@ -118,7 +118,7 @@ def set_power(sid):
         # TODO find a keyboard driver and implement OS parameter
 
 
-@host_api.route('/TROPIUS/hosts/<int:id>/reboot/<params>', methods=['POST'])
+@host_api.route('/TROPIUS/hosts/<int:id>/reboot', methods=['POST'])
 def reboot(params):
     # TODO make a unix shell util file
     # TODO make a windows util file
@@ -137,29 +137,27 @@ def play_music(sid):
         host = hosts.get_detail(db, sid)
         spotify.resume(host['ip'])
         return jsonify({})
-    try:
-        # Get the host data from the database
-        db = sqlite3.connect('/home/tropius/TROPIUS/TROPIUS.db')
-        host = hosts.get_detail(db, sid)
-        artist = None
-        album = None
-        track = None
-        if request.json.has_key('song'):
-            song = request.json.get('song')
-            #spotify.play(host['ip'], request.json.get('song'), 'song')
-        elif request.json.has_key('album'):
-            album = request.json.get('album')
-            #spotify.play(host['ip'], request.json.get('album'), 'album')
-        elif request.json.has_key('artist'):
-            artist = request.json.get('artist')
-            #spotify.play(host['ip'], request.json.get('artist'), 'artist')
-        else:
-            spotify.resume(host['ip'])
+    else:
+        try:
+            # Get the host data from the database
+            db = sqlite3.connect('/home/tropius/TROPIUS/TROPIUS.db')
+            host = hosts.get_detail(db, sid)
+            artist = None
+            album = None
+            track = None
+            if request.json.has_key('track') and request.json.get('track'):
+                track = request.json.get('track')
+            elif request.json.has_key('album') and request.json.get('album'):
+                album = request.json.get('album')
+            elif request.json.has_key('artist') and request.json.get('artist'):
+                artist = request.json.get('artist')
+            else:
+                spotify.resume(host['ip'])
+                return jsonify({})
+            spotify.compound_play(host['ip'], artist=artist, album=album, song=track)
             return jsonify({})
-        spotify.compound_play(host['ip'], artist=artist, album=album, song=song)
-        return jsonify({})
-    except:
-        abort(400)
+        except:
+            abort(400)
 
 @host_api.route('/TROPIUS/hosts/<int:sid>/music/pause', methods=['POST'])
 def pause_music(sid):

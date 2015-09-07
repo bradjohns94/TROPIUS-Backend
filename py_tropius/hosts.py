@@ -22,7 +22,7 @@ def add(db, hostName, ip, mac, state):
     return hostid
 
 
-def get(d, hostid):
+def get(db, hostid):
     """ Get the host data of the host with the given hostid """
     _validate_hostid(db, hostid)
     res = db.execute("SELECT * FROM host WHERE sid = %d" % hostid)
